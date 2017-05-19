@@ -13,9 +13,7 @@ buildscript {
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
-
-version = '0.0.1-SNAPSHOT'
-sourceCompatibility = 1.8
+apply plugin: 'maven-publish'
 
 repositories {
 	mavenCentral()
@@ -25,4 +23,25 @@ repositories {
 dependencies {
 	compile('org.springframework.boot:spring-boot-starter')
 	testCompile('org.springframework.boot:spring-boot-starter-test')
+}
+
+publishing {
+	repositories {
+		maven {
+			url "s3://comon-repo-test-bedc3070-c9b1-4399-8f19-e5ac0fdfd037.s3.amazonaws.com/snapshot"
+			credentials(AwsCredentials) {
+				accessKey "${System.getenv('AWS_KEY')}"
+				secretKey "${System.getenv('AWS_SECRET')}"
+			}
+		}
+	}
+
+	publications {
+		mavenJava(MavenPublication) {
+			groupId 'com.yasi'
+			artifactId 'commonSpike'
+			version '1.0'
+			from components.java
+		}
+	}
 }
